@@ -5,7 +5,7 @@ use Module::Build;
 
 my $builder = Module::Build->new(
     module_name         => 'Device::PiLite',
-    license             => 'Perl_5',
+    license             => 'perl',
     dist_author         => q{Jonathan Stowe <jns@gellyfish.co.uk>},
     dist_version_from   => 'lib/Device/PiLite.pm',
     release_status      => 'stable',
@@ -21,6 +21,11 @@ my $builder = Module::Build->new(
     },
     add_to_cleanup     => [ 'Device-PiLite-*' ],
     create_makefile_pl => 'traditional',
+    meta_merge	=>	{
+	resources	=>	{
+               repository => 'https://github.com/jonathanstowe/Device-PiLite',
+	},
+    },
 );
 
 $builder->create_build_script();
