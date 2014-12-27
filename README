@@ -1,18 +1,26 @@
-Device-PiLite
+Device::PiLite
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+This is a module to interface with the Pi-Lite device for
+the Raspberry PI from Ciseco.  This is a self contained board
+based on the Lots of Leds shield for the Arduino that supports
+the Raspberry PI by embedding an Atmel AVR with (by default) 
+firmware that allows the Raspberry PI to communicate with it 
+over the GPIO serial port.
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
-
+This module simply encapsulates the required serial messages in
+order to control the board.
 
 INSTALLATION
+
+It is assumed you have installed the board and followed the
+instructions at:
+
+http://openmicros.org/index.php/articles/94-ciseco-product-documentation/raspberry-pi/283-setting-up-my-raspberry-pi
+
+to prepare your Raspberry PI to work with your board.  The instructions are for the
+default Debian based OS, if you are using some other distribution I'm assuming that you
+know enough to do the functional equivalent. (For reference I developed this on a
+Fedora based dsitribution.)
 
 To install this module, run the following commands:
 
