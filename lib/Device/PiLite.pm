@@ -25,13 +25,49 @@ our $VERSION = '0.01';
     use Device::PiLite;
 
     my $pilite = Device::PiLite->new();
-    ...
+
+	$p->all_off();
+
+	$p->text("This is a test");
+
+	$p->all_off();
 
 
 
 =cut
 
 =head2 DESCRIPTION
+
+This module provides an interface for the Ciseco Pi-Lite for the Raspberry Pi.
+
+The Pi-Lite has a 14 x 9 grid of LEDs controlled by an embedded ATMEL AVR
+microcontroller that itself can be programmed using the Arduino toolchain,
+however the default firmware provides a relatively simple mechanism to
+communicate with the board from the Raspberry Pi's TTL serial port. 
+
+Device::PiLite requires the default firmware and will not work if the Pi-Lite
+is loaded with some other sketch.
+
+=head2 CONFIGURING FOR THE PI-LITE
+
+By default most Linux distributions for the Raspberry Pi will use the serial
+port for a console, this will interfere with the functioning of the
+Pi-Lite.  Before you try to use the device you will need to turn this off, and
+instructions for a Debian based distribution can be found at:
+
+	http://openmicros.org/index.php/articles/94-ciseco-product-documentation/raspberry-pi/283-setting-up-my-raspberry-pi
+
+If you are using a distribution with a different base (such as e.g. Pidora,)
+it may use C<systemd> rather than an inittab to start the console process and
+you will need to use C<systemctl> to disable the C<getty> service. You will
+still need to alter the C<cmdline.txt> as described in the above instructions.
+
+Any users that want to access the Pi-Lite will need to be in the C<dialout>
+group, which can be done by doing:
+
+	sudo usermod -a -G dialout username
+
+at the command line, where username is the user you want to add to the group.
 
 =head2 METHODS
 
@@ -145,7 +181,8 @@ sub _on_off
 =item set_scroll
 
 This sets the scroll delay in milliseconds per pixel.  The default is
-80
+80 (that is to say it will take 1.120 seconds to scroll the entire width
+of the screen.)
 
 =cut
 
@@ -171,6 +208,14 @@ has _scroll_rate	=>	(
 This writes the provided test to the Pi-Lite.  Scrolling as necessary
 at the configured rate.
 
+It won't return until all the text has been displayed, but you may want to
+pause for $columns * $scroll_rate milliseconds before doing anything else
+if you want the text to completely scroll off the screen.
+
+The ability or otherwise to display non-ASCII characters is entirely the
+responsibility of the firmware on the Pi-Lite (it uses a character to pixel
+map to draw the characters.)
+
 =cut
 
 sub text
@@ -191,7 +236,8 @@ sub text
 
 This writes every pixel in the Pi-Lite in one go, the argument is a
 126 character string where each character is a 1 or 0 that indicates
-the state of a pixel.
+the state of a pixel, starting from 1,1 (i.e. top left) to 14,9 
+(bottom right.)
 
 =cut
 
@@ -371,6 +417,9 @@ sub scroll
 This displays the specified single character at $column, $row.
 
 If the character would be partially off the screen it won't be displayed.
+
+As with C<text()> above, this is unlikely to work well with non-ASCII
+characters.
 
 =cut
 
@@ -565,7 +614,24 @@ Jonathan Stowe, C<< <jns at gellyfish.co.uk> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-device-pilite at rt.cpan.org>
+This appears to work as documented but it is difficult to test that the
+device behaves as expected in all cases automatically.
+
+Automated test reports indicating failure will be largely ignored unless
+they indicate a problem with the tests themselves.
+
+Please feel free to suggest any features with a pull request at:
+
+   https://github.com/jonathanstowe/Device-PiLite
+
+though I'd be disinclined to include anything that would require a change
+to the device's firmware as this is somewhat tricky to deploy.
+
+You can report bugs to C<bug-device-pilite@rt.cpan.org> but you should
+consider whether it is actually a bug in this code or that of the device,
+you can find the source for the firmware at:
+
+    https://github.com/CisecoPlc/PiLite
 
 
 =head1 SUPPORT
@@ -574,31 +640,9 @@ You can find documentation for this module with the perldoc command.
 
     perldoc Device::PiLite
 
+=head1 SEE ALSO
 
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker (report bugs here)
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Device-PiLite>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Device-PiLite>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Device-PiLite>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Device-PiLite/>
-
-=back
-
-
-=head1 ACKNOWLEDGEMENTS
+	L<Device::SerialPort>
 
 
 =head1 LICENSE AND COPYRIGHT
